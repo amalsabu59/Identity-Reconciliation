@@ -30,6 +30,13 @@ app.post("/identify", async (req, res) => {
   try {
     const { email, phoneNumber } = req.body;
 
+    if (!email) {
+      return res.status(400).send({ error: "No email address provided" });
+    }
+
+    if (!phoneNumber) {
+      return res.status(400).send({ error: "No phone number provided" });
+    }
     // Check if the contact already exists in the database
     await client.query(`
       CREATE TABLE IF NOT EXISTS contact (
@@ -50,7 +57,7 @@ app.post("/identify", async (req, res) => {
     );
 
     if (existingContactWithSamePhoneAndEmail.rows.length !== 0) {
-      return res.send({ error: "Contact already exists" });
+      return res.status(409).send({ error: "Contact already exists" });
     }
     // Check if there is an existing contact with the same phone number or email
     const existingContactWithPhoneOrMail = await client.query(
@@ -99,7 +106,7 @@ app.post("/identify", async (req, res) => {
         },
       };
 
-      res.send(response);
+      res.status(200).send(response);
     } else {
       // If the contact exists, create a secondary contact and update the response accordingly.
       const secondaryContact = {
@@ -161,7 +168,7 @@ app.post("/identify", async (req, res) => {
         }
       });
 
-      res.send(response);
+      res.status(200).send(response);
     }
   } catch (err) {
     console.error("Error executing query:", err);
