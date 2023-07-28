@@ -28,6 +28,7 @@ const connectToDatabase = async () => {
 // Endpoint to handle contact identification and inserting into database
 app.post("/identify", async (req, res) => {
   try {
+    console.log(req.body);
     const { email, phoneNumber } = req.body;
 
     if (!email) {
